@@ -1,0 +1,39 @@
+---
+- name: Configure Apache and Use JSON Data
+  hosts: localhost  # Assuming this is the local machine
+  become: yes
+  tasks:
+    - name: Make a mock API call (replace with your actual API endpoint)
+      uri:
+        url: "https://jsonplaceholder.typicode.com/posts/1"  # Example API endpoint
+        method: GET
+        status_code: 200
+      register: api_response
+
+    - name: Debug API response
+      debug:
+        var: api_response
+
+    # Mock JSON data (replace with your actual JSON data)
+    - name: Set mock JSON data
+      set_fact:
+        api_data: "{{ {
+          'apache_package': 'apache2',
+          'apache_state': 'present'
+        } }}"
+
+    - name: Debug Mock JSON Data
+      debug:
+        var: api_data
+
+    - name: Install Apache web server
+      apt:
+        name: "{{ api_data.apache_package }}"
+        state: "{{ api_data.apache_state }}"
+      become: yes
+
+  handlers:
+    - name: Reload Apache
+      service:
+        name: apache2
+        state: reloaded
